@@ -1,28 +1,23 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Annotated
+from models import Task
+from storage import add_task, get_tasks
 
 app = FastAPI()
 
-tasks = []
-
 class TaskModel(BaseModel):
-    theme: str
-    author: str = 'Anonym'
-    task: str
+    title: str = "Your title"
+    txt: str = "lorem ipsum"
 
-@app.get("/")
-def func():
-    return "Hello world!"
 
-@app.get("/tasks")
-def get_tasks() -> list[TaskModel]:
-    return tasks
+@app.post("/tasks", response_model=Task)
+def create_task(task: TaskModel):
+    return add_task(task.title, task.txt)
 
-@app.post("/tasks")
-def post_task(task: TaskModel) -> dict:
-    tasks.append(task)
-    return {"new task": task}
+
+@app.get("/tasks", response_model=list[Task])
+def read_tasks():
+    return get_tasks()
 
 
 
