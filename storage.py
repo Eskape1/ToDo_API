@@ -1,17 +1,38 @@
-from models import Task
+from models import Task, TaskModel
 from datetime import datetime
+from fastapi import HTTPException
 
 
 tasks = []
-task_id = 1
+ln = len(tasks)
+global_id = ln
 
-
-def add_task(title: str, txt: str ) -> Task:
-    global task_id
-    task = Task(id=task_id, title=title, txt=txt, created=datetime.now())
-    task_id += 1
-    tasks.append(task)
-    return task
-
+#get
 def get_tasks() -> list[Task]:
     return tasks
+
+#post
+def add_task(task: TaskModel ) -> Task:
+    global global_id
+    n_task = Task(id=global_id, title=task.title, txt=task.txt, created=datetime.now())
+    tasks.append(n_task)
+    global_id += 1
+    return n_task
+
+#put
+def put_task(task_id: int, n_title, n_txt) -> Task: 
+    for i, el in enumerate(tasks):
+        if el.id == task_id:
+            task: Task = tasks[i]
+            task.title = n_title
+            task.txt = n_txt
+            return task 
+    raise HTTPException(status_code=404, detail="Task not found")
+
+#delete
+def remove_task(task_id: int) -> None: 
+    for i, el in enumerate(tasks):
+        if el.id == task_id:
+            del tasks[i]
+            return
+    raise HTTPException(status_code=404, detail="Task not found")
