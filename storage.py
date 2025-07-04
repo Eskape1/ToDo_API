@@ -1,6 +1,6 @@
 from models import Task, TaskModel
 from datetime import datetime
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from typing import List
 
 tasks = []
@@ -12,9 +12,9 @@ def get_tasks() -> list[Task]:
     return tasks
 
 #post
-def add_task(task: TaskModel ) -> Task:
+def add_task(title: str, txt: str, tags: list[str] | None ) -> Task:
     global global_id
-    n_task = Task(id=global_id, title=task.title, txt=task.txt, created=datetime.now(), tags=task.tags)
+    n_task = Task(id=global_id, title=title, txt=txt, created=datetime.now(), tags=tags)
     tasks.append(n_task)
     global_id += 1
     return n_task
