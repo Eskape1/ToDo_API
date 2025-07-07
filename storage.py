@@ -1,40 +1,36 @@
-from models import Task, TaskModel
+from models import Task
 from datetime import datetime
-from fastapi import HTTPException, Query
-from typing import List
-
-tasks = []
-ln = len(tasks)
-global_id = ln
+from sqlalchemy.orm import Session
 
 #get
-def get_tasks() -> list[Task]:
-    return tasks
+def get_tasks(db: Session):
+    return db.query(Task).all()
 
 #post
-def add_task(title: str, txt: str, tags: list[str] | None ) -> Task:
-    global global_id
-    n_task = Task(id=global_id, title=title, txt=txt, created=datetime.now(), tags=tags)
-    tasks.append(n_task)
-    global_id += 1
+def add_task(db: Session, txt: str, tags: list[str] | None ):
+    now = datetime.now()
+    n_task = Task(txt=txt, tags=", ".join(tags), created=now)
+    db.add(n_task)
+    db.commit()
+    db.refresh(n_task)
     return n_task
 
 #put
-def put_task(task_id: int, n_title: str, n_txt: str, n_tags: List[str] | None = None) -> Task: 
-    for i, el in enumerate(tasks):
-        if el.id == task_id:
-            task: Task = tasks[i]
-            task.title = n_title
-            task.txt = n_txt
-            task.tags = n_tags
-            task.created = datetime.now()
-            return task 
-    raise HTTPException(status_code=404, detail="Task not found")
+def put_task(db: Session, task_id: int, new_txt: str, new_tags: list[str] | None): 
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if task is None:
+        return None
+    task.txt = new_txt
+    task.tags = ", ".join(new_tags)
+    db.commit()
+    return task 
 
 #delete
-def remove_task(task_id: int) -> None: 
-    for i, el in enumerate(tasks):
-        if el.id == task_id:
-            del tasks[i]
-            return
-    raise HTTPException(status_code=404, detail="Task not found")
+def remove_task(db: Session, task_id: int): 
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if task is None:
+        return None
+    db.delete(task)
+    db.commit()
+    return {"deleted": task}
+
