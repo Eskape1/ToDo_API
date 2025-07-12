@@ -1,9 +1,8 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List
+from pydantic import BaseModel, Field
 from sqlalchemy import Column, String, Integer, DateTime
-
-from database import Base
+from app.database import Base
 
 #model which user fills
 class TaskIn(BaseModel):

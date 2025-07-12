@@ -1,4 +1,4 @@
-from models import Task
+from app.models import Task
 from datetime import datetime
 from sqlalchemy.orm import Session
 
