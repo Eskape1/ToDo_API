@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from app import engine, Base, tasks
+from db.database import engine, Base
+from routers import tasks
 
 #our app
-app = FastAPI(title='ToDo', version='1.0', description='Todo list with tasks',)
+app = FastAPI(title='ToDo', version='1.01', description='Todo list with tasks',)
 
 #making database if it not exist yet
 Base.metadata.create_all(bind=engine)

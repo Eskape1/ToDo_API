@@ -1,4 +1,4 @@
-from app.models import Task
+from db.models import Task
 from datetime import datetime
 from sqlalchemy.orm import Session
 
@@ -23,7 +23,7 @@ def put_task(db: Session, task_id: int, new_txt: str, new_tags: list[str] | None
     task.txt = new_txt
     task.tags = ", ".join(new_tags)
     db.commit()
-    return task 
+    return db.query(Task).filter(Task.id == task_id).first()
 
 #delete
 def remove_task(db: Session, task_id: int): 

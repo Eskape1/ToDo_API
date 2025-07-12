@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from sqlalchemy.orm import Session
 from typing import Annotated
-from app.models import TaskIn, TaskOut
-from app.database import get_db
+from schemas.task import TaskIn, TaskOut
+from db.database import get_db
 from .storage import get_tasks, add_task, put_task, remove_task
 
 router = APIRouter(prefix='/tasks', tags=['Tasks'])
@@ -39,7 +39,7 @@ async def change_task(task_id: int, task: TaskIn, db: Session = Depends(get_db))
     new_task = put_task(db, task_id, task.txt, task.tags)
     if not new_task:
         raise HTTPException(status_code=404, detail="Task not found")
-    return new_task
+    return {"changed": new_task}
 
 
 @router.delete("/{task_id}")
